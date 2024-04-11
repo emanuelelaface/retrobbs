@@ -114,7 +114,10 @@ def searchHVSC(termino):
     res = []
     for i in query_json:
         entry = {}
-        entry['title'] = i['title']
+        if i['title'] == "<?>":
+            entry['title'] = "No Title"
+        else:
+            entry['title'] = i['title']
         entry['url'] = dl_url+str(i['id'])
         year = re.findall(r"[0-9]{4,7}", i['released'])
         if len(year) > 0:
