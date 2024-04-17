@@ -21,3 +21,4 @@ crc
 lhafile
 scikit-image
 pyradios
+validators

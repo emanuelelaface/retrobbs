@@ -99,7 +99,7 @@ def plugFunction(conn:Connection):
                     sidFile = tempfile.NamedTemporaryFile(suffix='.sid')
                     with open(sidFile.name, "wb") as f:
                         f.write(sidData.content)
-                    AA.CHIPStream(conn,sidFile.name,None,True)
+                    AA.CHIPStream(conn,sidFile.name,300,True)
                 conn.SendTML(f'<NUL><CURSOR><TEXT border={ecolors["BLACK"]} background={ecolors["BLACK"]}>')
 
     conn.Sendall(TT.set_Window(0,24))	#Set Text Window

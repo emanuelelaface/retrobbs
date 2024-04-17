@@ -24,7 +24,7 @@ def setup():
 #############################################
 def plugFunction(conn:Connection,url, crop):
 
-    conn.SendTML('<YELLOW><CBM-B><CRSRL>')
+    conn.SendTML('<YELLOW><SPINNER><CRSRL>')
     best = ''
     if crop != None:
         crop = tuple([int(e) if e.isdigit() else 0 for e in crop.split(',')])
@@ -75,7 +75,7 @@ def plugFunction(conn:Connection,url, crop):
                 _LOG(bcolors.WARNING+"YouTube: Video not found"+bcolors.ENDC,id=conn.id,v=1)
                 conn.Sendall('...error'+TT.enable_CRSR()) #Enable cursor
                 return
-    conn.SendTML(f'<CLR><TEXT border={conn.encoder.colors["BLUE"]} background={conn.encoder.colors["BLUE"]}>'
+    conn.SendTML(f'<TEXT border={conn.encoder.colors["BLUE"]} background={conn.encoder.colors["BLUE"]}><CLR>'
                  f'<BR><BR>Press <KPROMPT t=RETURN><YELLOW> for a new image<BR>'
                  f'<BR>Press <KPROMPT t=_><YELLOW> to exit<BR>')
     if conn.ReceiveKey(b'\r_') == b'_':
