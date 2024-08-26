@@ -120,14 +120,14 @@ AStreams = AudioStreams()
 def setup():
     global slsession
     fname = "WEBAUDIO" #UPPERCASE function name for config.ini
-    parpairs = [('url',"http://relay4.slayradio.org:8000/"),('image','')] #config.ini Parameter pairs (name,defaultvalue)
+    parpairs = [('url',"http://relay4.slayradio.org:8000/"),('image',''),('direct','')] #config.ini Parameter pairs (name,defaultvalue)
     slsession = streamlink.Streamlink()
     return(fname,parpairs)
 
 ##################################################
 # Plugin function
 ##################################################
-def plugFunction(conn:connection.Connection,url,image):
+def plugFunction(conn:connection.Connection,url,image,direct):
     #_LOG('Sending audio',id=conn.id)
     CHUNK = 16384
     bnoise = b'\x10\x01\x11'
@@ -147,6 +147,9 @@ def plugFunction(conn:connection.Connection,url,image):
     # except:
     #     sURL = None
     sURL = None
+    if (direct != None):
+        sTitle = formatX(direct)
+        sURL = url
     # Pafy failed, try with streamlink
     # streamlink lacks metadata functionality
     if sURL == None:
