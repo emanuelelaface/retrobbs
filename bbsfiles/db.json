@@ -1,0 +1,13 @@
+{
+    "USERS": {},
+    "_default": {
+        "1": {
+            "latest": [
+                "_guest_"
+            ],
+            "record": "bbs_stats",
+            "uptime": 51.277851581573486,
+            "visits": 1
+        }
+    }
+}
