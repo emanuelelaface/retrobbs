@@ -7,6 +7,7 @@
 
 from common import turbo56k as TT
 from common import filetools as FT
+from common import audio as AA
 from common.imgcvt import convert_To, cropmodes, PreProcess, gfxmodes, dithertype, get_ColorIndex
 from common.helpers import crop
 from common.connection import Connection
@@ -172,7 +173,8 @@ def plugFunction(conn:Connection):
                             conn.SendTML('<YELLOW>Invalid Stream...<PAUSE n=2>')
                         else:
                             fullname = episodes[int(epsel)]['title']
-                            conn.SendTML(f'<PCMPLAY url={url}>')
+                            conn.SendTML('<SPINNER><CRSRL>')
+                            AA.PlayAudio(conn, url, None)
                             conn.SendTML(f'<NUL><CURSOR><TEXT border={ecolors["BLACK"]} background={ecolors["BLACK"]}>')
                 PodcastTitle(conn)
 
