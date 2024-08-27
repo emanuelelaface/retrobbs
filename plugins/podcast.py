@@ -6,12 +6,18 @@
 # #############################################################################
 
 from common import turbo56k as TT
+from common import filetools as FT
+from common.imgcvt import convert_To, cropmodes, PreProcess, gfxmodes, dithertype, get_ColorIndex
 from common.helpers import crop
 from common.connection import Connection
 
 import string
-import podsearch
 import feedparser
+import requests
+import io
+import skimage
+from PIL import Image
+import numpy
 
 ###############
 # Plugin setup
@@ -27,6 +33,7 @@ def setup():
 def plugFunction(conn:Connection):
 
     columns,lines = conn.encoder.txt_geo
+    tml = f'<NUL n=2><SPLIT bgbottom={conn.encoder.colors["BLACK"]} mode="_C.mode"><CLR>'
 
     def PodcastTitle(conn:Connection):
         conn.SendTML(f'<WINDOW top=0 bottom={lines-1}><CLR><YELLOW>Search internet podcasts<BR>')
@@ -59,11 +66,11 @@ def plugFunction(conn:Connection):
         if searchRes == False:
             conn.SendTML('<ORANGE>Service unavailable...<PAUSE n=2>')
             continue
-        elif len(searchRes) == 0:
+        elif searchRes['resultCount'] == 0:
             conn.SendTML('<YELLOW>No results...<PAUSE n=2>')
             continue
         page = 0
-        npodcasts = len(searchRes)
+        npodcasts = searchRes['resultCount']
         pcount = lines-10
         if 'MSX' in conn.mode:
             grey = '<GREY>'
@@ -76,7 +83,7 @@ def plugFunction(conn:Connection):
                     pos = str(i)
                 else:
                     pos = " "+str(i)
-                podcastName = crop(searchRes[i].name,columns-10,conn.encoder.ellipsis).ljust(columns-10)
+                podcastName = crop(searchRes['results'][i]['collectionName'],columns-10,conn.encoder.ellipsis).ljust(columns-10)
                 conn.SendTML(f' <BLUE>{pos} {grey}{podcastName}<BR>')
             if npodcasts < pcount:
                 conn.SendTML(f'<BR><RED><BACK>{grey}Exit<BR>')
@@ -99,16 +106,28 @@ def plugFunction(conn:Connection):
                 conn.Sendall(TT.set_Window(0,lines))
                 return()
             if sel.isdigit() and int(sel) < npodcasts:
-                episodes = getEpisodes(searchRes[int(sel)])
+                episodes = getEpisodes(searchRes['results'][int(sel)])
                 if episodes == False:
                     conn.SendTML('<ORANGE>Service unavailable...<PAUSE n=2>')
                     continue
                 elif len(episodes) == 0:
                     conn.SendTML('<YELLOW>No episodes...<PAUSE n=2>')
                     continue
+                faviconURL = searchRes['results'][int(sel)]['artworkUrl100']
+                r = requests.get(faviconURL)
+                if r.reason == 'OK':
+                    image = skimage.io.imread(io.BytesIO(r.content))
+                    newimage = numpy.zeros((200,320,3), dtype=numpy.uint8)
+                    newimage[0:100,110:210,:] = image
+                else:
+                    newimage = numpy.zeros((200,320,3), dtype=numpy.uint8)
+
+                favicon = FT.SendBitmap(conn,Image.fromarray(newimage), lines=12, gfxmode=gfxmodes.C64HI,preproc=PreProcess(contrast=1.5,saturation=1.5),dither=dithertype.NONE, display=False)
+                conn.Sendall(TT.split_Screen(12,False,ord(favicon),conn.encoder.colors.get('BLACK',0),mode=conn.mode))
+
                 eppage = 0
                 nepisodes = len(episodes)
-                eppcount = lines-10
+                eppcount = lines-19
                 if 'MSX' in conn.mode:
                     grey = '<GREY>'
                 else:
@@ -137,29 +156,39 @@ def plugFunction(conn:Connection):
                     if epsel.upper() == 'N':
                         eppage = min(nepisodes//eppcount, eppage+1)
                     if epsel == '':
+                        conn.SendTML(tml)
                         conn.Sendall(TT.set_Window(0,lines))
                         break
                     if epsel == '_':
+                        conn.SendTML(tml)
                         conn.Sendall(TT.set_Window(0,lines))
                         return()
                     if epsel.isdigit() and int(epsel) < nepisodes:
-                        url = episodes[int(epsel)]['links'][0]['href']
-                        fullname = episodes[int(epsel)]['title']
-                        conn.SendTML(f'<WEBAUDIO url={url}, direct="{fullname}">')
-                        conn.SendTML(f'<NUL><CURSOR><TEXT border={ecolors["BLACK"]} background={ecolors["BLACK"]}>')
+                        url = None
+                        for link in episodes[int(epsel)]['links']:
+                            if 'mpeg' in link['type']:
+                                url = link['href']
+                        if url == None:
+                            conn.SendTML('<YELLOW>Invalid Stream...<PAUSE n=2>')
+                        else:
+                            fullname = episodes[int(epsel)]['title']
+                            conn.SendTML(f'<PCMPLAY url={url}>')
+                            conn.SendTML(f'<NUL><CURSOR><TEXT border={ecolors["BLACK"]} background={ecolors["BLACK"]}>')
                 PodcastTitle(conn)
 
-    conn.Sendall(TT.set_Window(0,lines))	#Set Text Window
-
 def searchPodcast(termino):
+    baseurl = 'https://itunes.apple.com/search?entity=podcast&term='
     try:
-        query = podsearch.search(termino)
+        query = requests.get(baseurl+termino.replace(' ','+'))
     except:
         return False
-    return query
+    if (query.reason == 'OK'):
+        return query.json()
+    else:
+        return False
 def getEpisodes(podcast):
     try:
-        query = feedparser.parse(podcast.feed)['entries']
+        query = feedparser.parse(podcast['feedUrl'])['entries']
     except:
         return False
     return query

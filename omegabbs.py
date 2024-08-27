@@ -594,6 +594,7 @@ def LogOff(conn:Connection, confirmation=True):
             _LOG('Disconnecting...\r',id=conn.id,v=3)
             conn.Sendall(data)
             conn.SendTML(f'<PAUSE n=1><WHITE><BR><BR>{"".join(formatX(conn.bbs.GBMess,conn.encoder.txt_geo[0]))}<BR><PAUSE n=1><LTBLUE><BR>{l_str[2]}<BR><WHITE><PAUSE n=1>')
+
             conn.connected = False	#break
             return True
         else:
