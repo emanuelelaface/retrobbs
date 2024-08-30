@@ -1,8 +1,8 @@
 ###############################################################################
 # Podcast Plugin 20240826 written by Emanuele Laface                          #
 #                                                                             #
-# This plugin requires podsearch ad feedpareser to work and it is a Python    #
-# implementaiton of https://performance-partners.apple.com/search-api         #
+# This plugin requires feedpareser to work and it is a Python                 #
+# implementation of https://performance-partners.apple.com/search-api         #
 # #############################################################################
 
 from common import turbo56k as TT
@@ -16,7 +16,6 @@ import string
 import feedparser
 import requests
 import io
-import skimage
 from PIL import Image
 import numpy
 
@@ -117,13 +116,18 @@ def plugFunction(conn:Connection):
                 faviconURL = searchRes['results'][int(sel)]['artworkUrl100']
                 r = requests.get(faviconURL)
                 if r.reason == 'OK':
-                    image = skimage.io.imread(io.BytesIO(r.content))
-                    newimage = numpy.zeros((200,320,3), dtype=numpy.uint8)
-                    newimage[0:100,110:210,:] = image
+                    newimage = Image.open(io.BytesIO(r.content))
+                    newimage.thumbnail((110,110))
                 else:
                     newimage = numpy.zeros((200,320,3), dtype=numpy.uint8)
+                if conn.mode == "PET64":
+                    gm = gfxmodes.C64HI
+                elif conn.mode == "PET264":
+                    gm = gfxmodes.P4HI
+                else:
+                    gm = conn.encoder.def_gfxmode
 
-                favicon = FT.SendBitmap(conn,Image.fromarray(newimage), lines=12, gfxmode=gfxmodes.C64HI,preproc=PreProcess(contrast=1.5,saturation=1.5),dither=dithertype.NONE, display=False)
+                favicon = FT.SendBitmap(conn,newimage, lines=12, cropmode=cropmodes.TOP ,gfxmode=gm,preproc=PreProcess(contrast=1.5,saturation=1.5),dither=dithertype.BAYER2, display=False)
                 conn.Sendall(TT.split_Screen(12,False,ord(favicon),conn.encoder.colors.get('BLACK',0),mode=conn.mode))
 
                 eppage = 0
