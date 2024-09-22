@@ -54,11 +54,11 @@ def plugFunction(conn:connection.Connection):
     while True:
         SendBitmap(conn,pics[pic_pos],gfxmode=gfxmodes.C64HI,preproc=PreProcess(contrast=1.5,saturation=1.5),dither=dithertype.NONE)
 
-        sel = conn.ReceiveKey(' x')
+        sel = conn.ReceiveKey(' _')
         if sel == ' ':
             pic_pos = (pic_pos + 1)%len(pics)
             continue
-        if sel == 'x':
+        if sel == '_':
             return()
 
     conn.SendTML('<SPINNER><CRSRL>')

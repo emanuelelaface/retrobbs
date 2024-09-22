@@ -587,7 +587,7 @@ def LogOff(conn:Connection, confirmation=True):
     l_str = lan.get(conn.bbs.lang,lan['en'])
 
     if confirmation == True:
-        conn.SendTML(f'<DEL n=23><LTGREEN>{l_str[0]}<WHITE><PAUSE n=1>')
+        conn.SendTML(f'<DEL n=22><LTGREEN>{l_str[0]}<WHITE><PAUSE n=1>')
         data = ''
         data = conn.ReceiveKey(l_str[1])
         if data == l_str[1][0]:
