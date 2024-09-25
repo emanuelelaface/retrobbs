@@ -4,19 +4,11 @@
         "1": {
             "latest": [
                 "_guest_",
-                "_guest_",
-                "_guest_",
-                "_guest_",
-                "_guest_",
-                "_guest_",
-                "_guest_",
-                "_guest_",
-                "_guest_",
                 "_guest_"
             ],
             "record": "bbs_stats",
-            "uptime": 6813.59876036644,
-            "visits": 154
+            "uptime": 417.2248361110687,
+            "visits": 2
         }
     }
 }

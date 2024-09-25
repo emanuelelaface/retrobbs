@@ -107,7 +107,7 @@ from common.imgcvt import im_extensions
 
 ##################################
 # BBS Version
-_version = 0.50
+_version = 0.60
 ##################################
 
 #Threads running flag
@@ -587,14 +587,19 @@ def LogOff(conn:Connection, confirmation=True):
     l_str = lan.get(conn.bbs.lang,lan['en'])
 
     if confirmation == True:
-        conn.SendTML(f'<DEL n=22><LTGREEN>{l_str[0]}<WHITE><PAUSE n=1>')
+        for k in conn.MenuDefs:
+            if LogOff in conn.MenuDefs[k]:
+                lolen = len(crop(conn.MenuDefs[k][2], conn.encoder.txt_geo[0]//2,conn.encoder.ellipsis))    # Logoff menu entry title len
+                
+                break
+        lolen += len(conn.bbs.MenuList[conn.menu]['prompt']) + 1 # Add menu prompt len and the trailing space
+        conn.SendTML(f'<DEL n={lolen}><LTGREEN>{l_str[0]}<WHITE><PAUSE n=1>')
         data = ''
         data = conn.ReceiveKey(l_str[1])
         if data == l_str[1][0]:
             _LOG('Disconnecting...\r',id=conn.id,v=3)
             conn.Sendall(data)
             conn.SendTML(f'<PAUSE n=1><WHITE><BR><BR>{"".join(formatX(conn.bbs.GBMess,conn.encoder.txt_geo[0]))}<BR><PAUSE n=1><LTBLUE><BR>{l_str[2]}<BR><WHITE><PAUSE n=1>')
-
             conn.connected = False	#break
             return True
         else:

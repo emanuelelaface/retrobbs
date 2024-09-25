@@ -227,8 +227,10 @@ Parameter:
 
 ---
 #### **&lt;LEN&gt;**
-Assign the length of the string in **_S** to **_I**
+Assign the length of the input parameter to **_I**<br>
+Parameter:
 
+`x`: String or register, default `_S`
 ---
 </br>
 
@@ -638,3 +640,31 @@ Engage character flash mode. Mode is automatically disengaged when a carriage re
 Disengage character flash mode.
 
 ---
+</br>
+
+### **MSX**:
+
+#### **Color control codes**
+Changes the text ink color to the specified color
+ - **&lt;BLACK&gt;**
+ - **&lt;WHITE&gt;**
+ - **&lt;RED&gt;**
+ - **&lt;CYAN&gt;**
+ - **&lt;PURPLE&gt;**
+ - **&lt;GREEN&gt;**
+ - **&lt;BLUE&gt;**
+ - **&lt;YELLOW&gt;**
+ - **&lt;PINK&gt;**
+ - **&lt;GREY&gt;**
+ - **&lt;LTGREEN&gt;**
+ - **&lt;LTBLUE&gt;**
+ - **&lt;DRED&gt;**
+ - **&lt;DGREEN&gt;**
+ - **&lt;LTYELLOW&gt;**
+
+ ---
+#### **&lt;PAPER&gt;**
+Changes the text paper color to the expecified color. Paper color applies only for text printed after this tag</br>
+Parameters:
+
+`c`: Palette color number, default `1` (black)</br>
