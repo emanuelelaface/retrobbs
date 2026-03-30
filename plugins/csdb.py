@@ -19,7 +19,7 @@ from common import filetools as FT
 from common.imgcvt import gfxmodes
 
 ### User Agent string used for some stingy content sources
-hdrs = {'User-Agent':'Mozilla/5.0 (X11; Linux x86_64; rv:87.0) Gecko/20100101 Firefox/87.0'}
+hdrs = {'User-Agent':'Mozilla/5.0 (X11; Linux x86_64; rv:87.0) Gecko/20100101 Firefox/87.0','Referer':'https://csdb.dk'}
 
 ### Release types
 release_types64 = ['C64 Demo','C64 One-File Demo','C64 Intro','C64 4K Intro','C64 Crack Intro','REU Release','C64 Music','C64 Music Collection','C64 Graphics',

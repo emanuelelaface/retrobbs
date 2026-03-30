@@ -203,5 +203,10 @@ def getEpisodes(podcast):
     try:
         query = feedparser.parse(podcast['feedUrl'])['entries']
     except:
-        return False
+        try:
+            feedparser.api._XML_AVAILABLE = False
+            query = feedparser.parse(podcast['feedUrl'])['entries']
+        except:
+            feedparser.api._XML_AVAILABLE = True
+            return False
     return query

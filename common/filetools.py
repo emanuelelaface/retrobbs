@@ -427,7 +427,7 @@ def ImageDialog(conn:Connection, title, width=0, height=0, save=False):
 # gfxmode: Graphic mode
 # preproc: Preprocess image before converting
 ##############################################################
-def SendBitmap(conn:Connection, filename, dialog = False, save = False, lines = 25, display = True,  gfxmode:gfxmodes = None, preproc:PreProcess = None, cropmode:cropmodes = cropmodes.FILL, dither:dithertype = dithertype.BAYER8):
+def SendBitmap(conn:Connection, filename, dialog = False, save = False, lines = 25, display = True,  gfxmode:gfxmodes = None, preproc:PreProcess = None, cropmode:cropmodes = cropmodes.FILL, dither:dithertype = dithertype.BAYER8, keepcvt = False):
 
     lines = lines if lines < conn.encoder.txt_geo[1] else conn.encoder.txt_geo[1]
 
@@ -606,10 +606,13 @@ def SendBitmap(conn:Connection, filename, dialog = False, save = False, lines = 
             # Exit command mode
             binaryout += b'\xFE'
             conn.Sendallbin(binaryout)
-            return bgcolor
+            if keepcvt:
+                return bgcolor,cvimg
+            else:
+                return bgcolor
         else:   # Other image transfers
             if conn.mode == 'VidTex':
-                conn.encoder.SetVTMode('M') # Just set the internal flag to something different than text mode. See VT52encoder.SetBTMode() for the reason
+                conn.encoder.SetVTMode('M') # Just set the internal flag to something different than text mode. See VT52encoder.SetVTMode() for the reason
                 if len(data[0]) > 15000:    # Increase socket timeout in case the RLE stream is too big (Assuming 600 baud connection)
                     conn.socket.settimeout(60.0*10)  # A dynamic value would be even better
             conn.Sendallbin(bytes(data[0])) # Assume data[0] already has the required 'commands' to set the client in the correct mode
@@ -631,7 +634,10 @@ def SendBitmap(conn:Connection, filename, dialog = False, save = False, lines = 
             else:
                 conn.SendTML(fabort)
         conn.SendTML('<KPROMPT t=RETURN>')
-        return
+        if keepcvt:
+            return cvimg
+        else:
+            return
 
 #######################################################################################
 # Sends a file to the client, calls the adequate function according to the filetype
