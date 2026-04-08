@@ -271,7 +271,7 @@ def plugFunction(conn:connection.Connection,url,image,title):
             )
             for l in sTitle:
                 conn.SendTML(l)
-            conn.SendTML(f'<BR>Press <KPROMPT t=RETURN><YELLOW> to play<BR>')
+            conn.SendTML(f'<BR><YELLOW>Press <KPROMPT t=RETURN><YELLOW> to play<BR>')
             if 'MSX' in conn.mode:
                 conn.SendTML(f'Press <KPROMPT t=STOP><YELLOW> and wait to stop<BR>')
                 conn.SendTML(f'Press <KPROMPT t=X><YELLOW> to cancel<BR>')
